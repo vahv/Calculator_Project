@@ -28,8 +28,12 @@ body{
     justify-content: center;
 }
 
-.display>span{
+.display>.main{
     font: 3em Arial, Helvetica, sans-serif;
+    text-align: right;
+}
+.display>.sub{
+    font: 1.2em Arial, Helvetica, sans-serif;
     text-align: right;
 }
 
