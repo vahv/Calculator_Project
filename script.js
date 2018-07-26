@@ -21,3 +21,16 @@ function operate (operator,number1,number2){
     }
 }
 
+const digits = document.querySelectorAll(".digit");
+digits.forEach(digit => digit.addEventListener("click",addDigit));
+const display = document.querySelector(".display>span");
+
+
+function addDigit(){
+    if(display.textContent == "0" && this.textContent != ".") display.textContent = "";
+    if(this.textContent == ".")
+        if (display.textContent.includes(".")) ;
+        else display.textContent = display.textContent+this.textContent;
+    else
+        display.textContent = display.textContent+this.textContent;
+}
