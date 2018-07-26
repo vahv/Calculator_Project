@@ -1,1 +1,38 @@
+body{
+    background-image: url("http://paper5pc.com/images/abstract-blue-minimalistic-blur-dreamy-wallpaper-1.jpg");
+}
 
+.container{
+    display: grid;
+    width: 80%;
+    height: 70%;
+    min-height: 300px;
+    padding: 10px;
+    margin: 0 auto;
+    background-color: aliceblue;
+    grid-template: repeat(7,1fr) / repeat(4,1fr);
+    grid-gap: 0.5em;
+    border: 1px solid; 
+}
+
+.container>button{
+    font-size: 1.5em;
+}
+
+.display{
+    grid-column: span 4;
+    grid-row: span 2;
+    padding: 0 5px 0 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.display>span{
+    font: 3em Arial, Helvetica, sans-serif;
+    text-align: right;
+}
+
+.span2{
+    grid-column: span 2;
+}
