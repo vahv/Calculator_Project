@@ -21,86 +21,158 @@ function operate (operator,number1,number2){
     }
 }
 
-const digits = document.querySelectorAll(".digit");
 const display = document.querySelector(".display>.main");
 const subDisplay = document.querySelector(".display>.sub");
-const operators = document.querySelectorAll(".operator");
-const edits = document.querySelectorAll(".edit");
+const buttons = document.querySelectorAll(".container>button");
+buttons.forEach(button => button.addEventListener("click",evaluateAccion));
 
-digits.forEach(digit => digit.addEventListener("click",addDigit));
-operators.forEach(operator => operator.addEventListener("click",proccessOperator));
-edits.forEach(edit => edit.addEventListener("click",proccessEdit));
 let operator = "";
 let number1 = "";
 let number2 = "";
-let reset = false;
-
-function proccessOperator(){
-    if (operator == ""){ 
-        operator = this.textContent;
-        number1 = display.textContent;
-        subDisplay.textContent = `${number1} ${operator}`;
-        display.textContent = "0";
-        reset = false;
-    }
-    else{
-        switch(this.textContent){
-            case "=":
-                number2 = display.textContent;
-                number1 = operate(operator,+number1,+number2);
-                subDisplay.textContent = `${subDisplay.textContent} ${number2} =`;
-                operator = "";
-                display.textContent = number1;
-                number1 = "";
-                reset = true;
-            break;
-            
-            default:
-                number2 = display.textContent;
-                number1 = operate(operator,+number1,+number2);
-                operator = this.textContent;
-                subDisplay.textContent = `${number1} ${operator} `;
-                display.textContent = "0";
-            break;
-        }
-    }    
-}
-
-
-
-function addDigit(){
-    if(reset){
-        display.textContent = "";
-        subDisplay.textContent = "";
-        reset = false;
-    }
-    if(display.textContent == "0" && this.textContent != ".")
-        display.textContent = "";
+const waitingForFirstNumber = 1;
+const waitingForSecondNumber = 2;
+const displayingResult = 3;
+let currentState = waitingForFirstNumber;
     
-        
+    function evaluateAccion (){
+           switch(currentState){
+                case waitingForFirstNumber:
+                    switch(getTypeOfButton(this.textContent)){
+                        case "digit":
+                        case ".":
+                            displayDigit(this.textContent);
+                            break;
+                        case "operator":
+                            number1 = display.textContent;
+                            operator = this.textContent;
+                            currentState = waitingForSecondNumber;
+                            addTosubDisplay(number1, operator);
+                            clearDisplay();
+                            break;
+                            case "DEL":
+                            deleteDigit();
+                            break;
+                            case "C":
+                            clearDisplay();
+                            break;
+                            case "CE":
+                            resetCalc();
+                            break;      
+                        }
+                    break;
+                case waitingForSecondNumber:
+                    switch(getTypeOfButton(this.textContent)){
+                        case "digit":
+                        case ".":
+                            displayDigit(this.textContent);
+                            break;
+                        case "operator":
+                            number2 = display.textContent;
+                            number1 = operate(operator,+number1,+number2);
+                            operator = this.textContent;
+                            addTosubDisplay(number1, operator);
+                            currentState = waitingForSecondNumber;
+                            break;
+                        case "=":
+                            number2 = display.textContent;
+                            number1 = operate(operator,+number1,+number2);
+                            operator = "";
+                            addTosubDisplay(subDisplay.textContent,number2, "=");
+                            displayResult(number1);
+                            currentState = displayingResult;
+                        break;                            
+                        case "DEL":
+                            deleteDigit(display);
+                            break;
+                        case "C":
+                            clearDisplay();
+                            break;
+                        case "CE":
+                            resetCalc();
+                            break;
+                    }       
+                break;
+                case displayingResult:
+                    switch(getTypeOfButton(this.textContent)){
+                        case "digit":
+                            resetCalc();
+                            displayDigit(this.textContent);
+                            break;
+                        case "operator":
+                            number1 = display.textContent;
+                            operator = this.textContent;
+                            currentState = waitingForSecondNumber;
+                            addTosubDisplay(number1, operator);
+                            clearDisplay();
+                            break;                          
+                        case "CE":
+                            resetCalc();
+                            break;
+                    }                                           
+                break;
+        }
+    }
+
+    function getTypeOfButton(name){
+        switch(name){
+            case "0" :
+            case "1" :
+            case "2" :
+            case "3" :
+            case "4" :
+            case "5" :
+            case "6" :
+            case "7" :
+            case "8" :
+            case "9" :
+                return "digit";
+            case "*" :
+            case "÷" :
+            case "+" :
+            case "-" :
+                return "operator";
+            case "." : return name;
+            case "CE": return name;
+            case "C": return name;
+            case "DEL": return name;
+            case "=" : return name;
+            
+        }
+
+    }
+function displayResult(result){
+    display.textContent = result; 
+}    
+function displayDigit(digit){
+    if(display.textContent == "0" && digit != ".")
+        display.textContent = "";
+
     if(this.textContent == ".")
         if (display.textContent.includes(".")) ;
-        else display.textContent = display.textContent+this.textContent;
+        else display.textContent = display.textContent+digit
     else
-        display.textContent = display.textContent+this.textContent;
+        display.textContent = display.textContent+digit;  
+}
+function addTosubDisplay(){
+    const args = Array.prototype.slice.call(arguments);
+    subDisplay.textContent = args.join(" ");
 }
 
-function proccessEdit(){
-    switch(this.textContent){
-        case "C":
-            display.textContent = "0";
-        break;
-        case "CE":
-            display.textContent = "0";
-            subDisplay.textContent = "";
-            operator = "";
-            number1 = "";
-            number2 = "";
-            reset = false;
-        break;
-        case "DEL":
-            let content = display.textContent.slice(0,display.textContent.length-1);
-            display.textContent = content != ""? content : "0";
-        break;
-    }
+function clearDisplay(){
+    display.textContent = "0";
 }
+
+function deleteDigit(){
+    let content = display.textContent.slice(0,display.textContent.length-1);
+    display.textContent = content != "" ? content : "0"; 
+}
+
+function resetCalc(){
+    display.textContent = "0";
+    subDisplay.textContent = "";
+    operator = "";
+    number1 = "";
+    number2 = "";
+    currentState = waitingForFirstNumber;
+}
+
