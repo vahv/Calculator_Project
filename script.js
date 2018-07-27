@@ -32,6 +32,9 @@ let number2 = "";
 const waitingForFirstNumber = 1;
 const waitingForSecondNumber = 2;
 const displayingResult = 3;
+const error = 4;
+;
+
 let currentState = waitingForFirstNumber;
     
     function evaluateAccion (){
@@ -71,7 +74,7 @@ let currentState = waitingForFirstNumber;
                             number1 = operate(operator,+number1,+number2);
                             operator = this.textContent;
                             addTosubDisplay(number1, operator);
-                            currentState = waitingForSecondNumber;
+                            currentState = (number1 =="Error") ? error: waitingForSecondNumber;
                             break;
                         case "=":
                             number2 = display.textContent;
@@ -79,7 +82,7 @@ let currentState = waitingForFirstNumber;
                             operator = "";
                             addTosubDisplay(subDisplay.textContent,number2, "=");
                             displayResult(number1);
-                            currentState = displayingResult;
+                            currentState = (number1 =="Error") ? error: displayingResult;
                         break;                            
                         case "DEL":
                             deleteDigit(display);
@@ -109,6 +112,16 @@ let currentState = waitingForFirstNumber;
                             resetCalc();
                             break;
                     }                                           
+                break;
+                case error:
+                switch(getTypeOfButton(this.textContent)){                          
+                    case "C":
+                        resetCalc();
+                        break;
+                    case "CE":
+                        resetCalc();
+                        break;
+                }                     
                 break;
         }
     }
